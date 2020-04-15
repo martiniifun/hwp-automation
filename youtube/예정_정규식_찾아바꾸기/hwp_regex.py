@@ -27,12 +27,12 @@ file_name = "d6-d7.hwp"  # 정규식으로 찾아바꾸기 할 문서
 re_pattern = re.compile("(\d{6})[-](\d)\d{6}")  # 주민등록번호 패턴. 뒷자리 첫 번째 숫자를 남겨놓기 위해 그룹을 두 개.
 
 if __name__ == '__main__':  # main함수 실행(본 파일을 다른 py에서 import한 경우가 아니라면 아래 코드를 실행
-    try:  # 한글이 오류로 닫힐 때에 finally 구문으로 백그라운드의 모든 hwp 인스턴스를 닫기 위해
+    try:  # 한글이 오류로 닫힐 때에 finally 구문으로 백그라운드의 모든 hwp 인스턴스를 닫기 위함
         hwp = win32.gencache.EnsureDispatch("HWPFrame.HwpObject")  # 한/글 인스턴스 생성
         hwp.RegisterModule("FilePathCheckDLL", "SecurityModule")  # 보안모듈
         hwp.Run("FileNew")  # 화면에 보이는 창 하나 띄우기(백그라운드작업을 원하면 이 라인을 지워도 됨)
         hwp.Open(os.path.join(BASE_DIR, file_name))  # 파일 열기
-        try:
+        try:  # GetText() 과정 중 오류 발생시에도 ReleaseScan()을 실행하기 위함
             hwp.InitScan()  # GetText 메서드를 실행하기 위한 검색초기화 메서드
             while True:
                 textdata = hwp.GetText()  # 문자열을 탐색하면서 튜플을 반환함(엔터로 구분) [0]:상태코드, [1]:텍스트
@@ -51,7 +51,6 @@ if __name__ == '__main__':  # main함수 실행(본 파일을 다른 py에서 im
                         hwp.HParameterSet.HInsertText.Text = re_text  # 삽입할 텍스트(re_text) 입력
                         hwp.HAction.Execute("InsertText", hwp.HParameterSet.HInsertText.HSet)  # 텍스트 삽입메서드 실행
                         hwp.Run("Cancel")  # 선택모드 종료
-
         finally:
             hwp.ReleaseScan()  # InitScan() 및 GetText() 후에는 ReleaseScan() 실행-검색종료
             print('Scan Released')
