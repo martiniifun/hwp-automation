@@ -19,7 +19,6 @@ import os  # 경로 선택 등을 위한 모듈
 import re  # 정규표현식 모듈
 import tkinter
 from tkinter.filedialog import askopenfilename
-from typing import Pattern
 
 import win32com.client as win32  # 아래아한글 제어를 위한 모듈
 
