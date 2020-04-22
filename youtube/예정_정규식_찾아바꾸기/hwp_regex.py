@@ -15,15 +15,18 @@
 파이썬으로는 아래와 같다.
 """
 
-
 import os  # 경로 선택 등을 위한 모듈
 import re  # 정규표현식 모듈
+import tkinter
+from tkinter.filedialog import askopenfilename
+from typing import Pattern
 
 import win32com.client as win32  # 아래아한글 제어를 위한 모듈
 
-
-BASE_DIR = os.getcwd()  # 아래아한글은 저장/불러오기 할 때 전체경로를 입력해야 한다.
-file_name = "d6-d7.hwp"  # 정규식으로 찾아바꾸기 할 문서
+BASE_DIR = os.getcwd()  # 아래아한글은 저장/불러오기 할 때 전체경로를 입력해야 한다. 그러기 위해서는...
+# file_name = "d6-d7.hwp"  # 정규식으로 찾아바꾸기 할 문서 -> tkinter로 파일다이얼로그 대체
+tkinter.Tk().withdraw()
+file_name = askopenfilename(initialdir=BASE_DIR)
 re_pattern = re.compile("(\d{6})[-](\d)\d{6}")  # 주민등록번호 패턴. 뒷자리 첫 번째 숫자를 남겨놓기 위해 그룹을 두 개.
 
 if __name__ == '__main__':  # main함수 실행(본 파일을 다른 py에서 import한 경우가 아니라면 아래 코드를 실행
@@ -53,7 +56,7 @@ if __name__ == '__main__':  # main함수 실행(본 파일을 다른 py에서 im
                         hwp.Run("Cancel")  # 선택모드 종료
         finally:
             hwp.ReleaseScan()  # InitScan() 및 GetText() 후에는 ReleaseScan() 실행-검색종료
-            print('Scan Released')
+            print('정규식 바꾸기 작업을 완료하고 "./result.hwp"로 저장하였습니다.')
     finally:
         hwp.SaveAs(os.path.join(BASE_DIR, "result.hwp"))  # BASE_DIR에 "result.hwp"라는 이름으로 저장하고
         hwp.Quit()  # 한/글 인스턴스 종료(백그라운드 인스턴스 포함)
